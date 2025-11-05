@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Med膳Connect",
+  title: "Dish And Dose",
   description: "Identify and manage food–drug interactions.",
 };
 

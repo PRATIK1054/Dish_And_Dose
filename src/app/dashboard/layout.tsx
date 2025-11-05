@@ -60,7 +60,7 @@ export default function DashboardLayout({
               <UtensilsCrossed size={18} />
             </Button>
             <h1 className="text-xl font-bold text-foreground font-headline group-data-[collapsible=icon]:hidden">
-              Med膳Connect
+              Dish And Dose
             </h1>
           </div>
         </SidebarHeader>
@@ -106,7 +106,7 @@ export default function DashboardLayout({
         <header className="flex items-center justify-between p-4 bg-card md:hidden">
           <div className="flex items-center gap-2">
             <UtensilsCrossed className="w-8 h-8 text-primary" />
-            <h1 className="text-xl font-bold font-headline">Med膳Connect</h1>
+            <h1 className="text-xl font-bold font-headline">Dish And Dose</h1>
           </div>
           <SidebarTrigger />
         </header>

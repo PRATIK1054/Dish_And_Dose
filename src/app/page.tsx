@@ -20,7 +20,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <UtensilsCrossed className="w-12 h-12 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-headline">Med膳Connect</CardTitle>
+          <CardTitle className="text-3xl font-headline">Dish And Dose</CardTitle>
           <CardDescription>
             Your guide to safe eating with medication.
           </CardDescription>
