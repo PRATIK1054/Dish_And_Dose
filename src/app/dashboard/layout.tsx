@@ -10,7 +10,11 @@ import {
   QrCode,
   ShieldAlert,
   UtensilsCrossed,
+  Languages,
 } from "lucide-react";
+import React, { useContext } from 'react';
+import { AppContext } from '@/context/app-context';
+
 
 import {
   SidebarProvider,
@@ -27,25 +31,26 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  {
-    href: "/dashboard/interaction-check",
-    icon: ShieldAlert,
-    label: "Interaction Check",
-  },
-  { href: "/dashboard/medications", icon: Pill, label: "My Medications" },
-  { href: "/dashboard/reminders", icon: Clock, label: "Reminders" },
-  { href: "/dashboard/scan", icon: QrCode, label: "Scan Prescription" },
-  { href: "/dashboard/education", icon: BookOpen, label: "Learn" },
-];
-
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { dict } = useContext(AppContext);
+
+  const navItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: dict.dashboard },
+    {
+      href: "/dashboard/interaction-check",
+      icon: ShieldAlert,
+      label: dict.interactionCheck,
+    },
+    { href: "/dashboard/medications", icon: Pill, label: dict.myMedications },
+    { href: "/dashboard/reminders", icon: Clock, label: dict.reminders },
+    { href: "/dashboard/scan", icon: QrCode, label: dict.scanPrescription },
+    { href: "/dashboard/education", icon: BookOpen, label: dict.learn },
+  ];
 
   return (
     <SidebarProvider>
@@ -60,7 +65,7 @@ export default function DashboardLayout({
               <UtensilsCrossed size={18} />
             </Button>
             <h1 className="text-xl font-bold text-foreground font-headline group-data-[collapsible=icon]:hidden">
-              Dish And Dose
+              {dict.title}
             </h1>
           </div>
         </SidebarHeader>
@@ -88,14 +93,14 @@ export default function DashboardLayout({
               <SidebarMenuButton
                 asChild
                 isActive={pathname === "/dashboard/profile"}
-                tooltip={{ children: "Profile" }}
+                tooltip={{ children: dict.userProfile }}
               >
                 <Link href="/dashboard/profile">
                   <Avatar className="w-6 h-6">
                     <AvatarImage src="https://picsum.photos/seed/user/40/40" />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
-                  <span className="group-data-[collapsible=icon]:hidden">User Profile</span>
+                  <span className="group-data-[collapsible=icon]:hidden">{dict.userProfile}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -106,7 +111,7 @@ export default function DashboardLayout({
         <header className="flex items-center justify-between p-4 bg-card md:hidden">
           <div className="flex items-center gap-2">
             <UtensilsCrossed className="w-8 h-8 text-primary" />
-            <h1 className="text-xl font-bold font-headline">Dish And Dose</h1>
+            <h1 className="text-xl font-bold font-headline">{dict.title}</h1>
           </div>
           <SidebarTrigger />
         </header>

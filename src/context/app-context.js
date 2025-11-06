@@ -1,4 +1,3 @@
-
 'use client'
 
 import React, { createContext, useState, useEffect } from "react";
@@ -19,6 +18,17 @@ export const AppWrapper = ({ children }) => {
   const [dict, setDict] = useState(langObj[lang]);
 
   useEffect(() => {
+    const storedLang = localStorage.getItem('lang');
+    if (storedLang && langObj[storedLang]) {
+      setLang(storedLang);
+      setDict(langObj[storedLang]);
+    } else {
+      setDict(langObj['English']);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('lang', lang);
     setDict(langObj[lang]);
   }, [lang]);
 

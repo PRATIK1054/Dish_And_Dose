@@ -1,14 +1,19 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Pill, ShieldAlert } from "lucide-react";
 import Link from "next/link";
+import React, { useContext } from 'react';
+import { AppContext } from '@/context/app-context';
 
 export default function DashboardPage() {
+  const { dict } = useContext(AppContext);
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-bold font-headline">Welcome back!</h1>
+        <h1 className="text-3xl font-bold font-headline">{dict.welcomeBack}</h1>
         <p className="text-muted-foreground">
-          Your guide to safe eating with medication.
+          {dict.welcomeMessage}
         </p>
       </header>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -16,42 +21,42 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldAlert className="w-6 h-6 text-accent" />
-              Interaction Check
+              {dict.interactionCheck}
             </CardTitle>
             <CardDescription>
-              Check for food-drug interactions to stay safe.
+              {dict.interactionCheckDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center flex-1">
-             <Link href="/dashboard/interaction-check" className="text-lg font-semibold text-primary hover:underline">Start Checking</Link>
+             <Link href="/dashboard/interaction-check" className="text-lg font-semibold text-primary hover:underline">{dict.startChecking}</Link>
           </CardContent>
         </Card>
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Pill className="w-6 h-6 text-accent" />
-              My Medications
+              {dict.myMedications}
             </CardTitle>
             <CardDescription>
-              Manage your list of medications for personalized advice.
+              {dict.myMedicationsDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center flex-1">
-             <Link href="/dashboard/medications" className="text-lg font-semibold text-primary hover:underline">Manage Meds</Link>
+             <Link href="/dashboard/medications" className="text-lg font-semibold text-primary hover:underline">{dict.manageMeds}</Link>
           </CardContent>
         </Card>
         <Card className="flex flex-col">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-accent" />
-              Learn
+              {dict.learn}
             </CardTitle>
             <CardDescription>
-             Expand your knowledge on safe medication use.
+             {dict.learnDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center flex-1">
-            <Link href="/dashboard/education" className="text-lg font-semibold text-primary hover:underline">Read Articles</Link>
+            <Link href="/dashboard/education" className="text-lg font-semibold text-primary hover:underline">{dict.readArticles}</Link>
           </CardContent>
         </Card>
       </div>

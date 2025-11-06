@@ -1,4 +1,29 @@
 
 {
-    "title": "Med-Food Interaction App"
+    "title": "Dish And Dose",
+    "welcomeMessage": "Your guide to safe eating with medication.",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "dontHaveAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "dashboard": "Dashboard",
+    "interactionCheck": "Interaction Check",
+    "myMedications": "My Medications",
+    "reminders": "Reminders",
+    "scanPrescription": "Scan Prescription",
+    "learn": "Learn",
+    "userProfile": "User Profile",
+    "welcomeBack": "Welcome back!",
+    "interactionCheckDescription": "Check for food-drug interactions to stay safe.",
+    "startChecking": "Start Checking",
+    "myMedicationsDescription": "Manage your list of medications for personalized advice.",
+    "manageMeds": "Manage Meds",
+    "learnDescription": "Expand your knowledge on safe medication use.",
+    "readArticles": "Read Articles",
+    "myProfile": "My Profile",
+    "age": "Age",
+    "gender": "Gender",
+    "medicalConditions": "Medical Conditions",
+    "language": "Language"
 }

@@ -1,4 +1,29 @@
 
 {
-    "title": "मेड-फूड इंटरेक्शन ऐप"
+    "title": "डिश एंड डोज़",
+    "welcomeMessage": "दवा के साथ सुरक्षित भोजन के लिए आपका गाइड।",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "login": "लॉग इन करें",
+    "dontHaveAccount": "खाता नहीं है?",
+    "signUp": "साइन अप करें",
+    "dashboard": "डैशबोर्ड",
+    "interactionCheck": "इंटरेक्शन जांच",
+    "myMedications": "मेरी दवाएं",
+    "reminders": "रिमाइंडर",
+    "scanPrescription": "प्रिस्क्रिप्शन स्कैन करें",
+    "learn": "जानें",
+    "userProfile": "प्रोफ़ाइल",
+    "welcomeBack": "वापसी पर स्वागत है!",
+    "interactionCheckDescription": "सुरक्षित रहने के लिए खाद्य-दवा इंटरैक्शन की जांच करें।",
+    "startChecking": "जांच शुरू करें",
+    "myMedicationsDescription": "व्यक्तिगत सलाह के लिए अपनी दवाओं की सूची प्रबंधित करें।",
+    "manageMeds": "दवाएं प्रबंधित करें",
+    "learnDescription": "सुरक्षित दवा उपयोग पर अपना ज्ञान बढ़ाएं।",
+    "readArticles": "लेख पढ़ें",
+    "myProfile": "मेरी प्रोफ़ाइल",
+    "age": "आयु",
+    "gender": "लिंग",
+    "medicalConditions": "चिकित्सा स्थितियां",
+    "language": "भाषा"
 }
