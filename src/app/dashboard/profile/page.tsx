@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
   age: z.coerce.number().min(1, { message: 'Age must be a positive number.' }),
   gender: z.string().min(1, { message: 'Please select a gender.' }),
   medicalConditions: z.string().optional(),
@@ -42,6 +43,7 @@ export default function ProfilePage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: userData.name,
+      email: userData.email,
       age: userData.age,
       gender: userData.gender,
       medicalConditions: userData.medicalConditions,
@@ -87,19 +89,34 @@ export default function ProfilePage() {
           {isEditing ? (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{dict.name || 'Name'}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{dict.name || 'Name'}</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{dict.email || 'Email'}</FormLabel>
+                        <FormControl>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <div className="grid gap-4 md:grid-cols-2">
                    <FormField
                     control={form.control}
