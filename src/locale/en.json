@@ -25,5 +25,6 @@
     "age": "Age",
     "gender": "Gender",
     "medicalConditions": "Medical Conditions",
-    "language": "Language"
+    "language": "Language",
+    "name": "Name"
 }

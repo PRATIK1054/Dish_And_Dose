@@ -25,5 +25,6 @@
     "age": "आयु",
     "gender": "लिंग",
     "medicalConditions": "चिकित्सा स्थितियां",
-    "language": "भाषा"
+    "language": "भाषा",
+    "name": "नाम"
 }

@@ -25,5 +25,6 @@
     "age": "वय",
     "gender": "लिंग",
     "medicalConditions": "वैद्यकीय परिस्थिती",
-    "language": "भाषा"
+    "language": "भाषा",
+    "name": "नाव"
 }
