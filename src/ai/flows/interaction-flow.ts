@@ -20,6 +20,7 @@ const InteractionSchema = z.object({
 
 const InteractionInputSchema = z.object({
   drugName: z.string().describe('The name of the drug to check for interactions.'),
+  language: z.string().describe('The language for the output, e.g., "English", "Hindi".')
 });
 
 const InteractionOutputSchema = z.object({
@@ -48,6 +49,8 @@ const interactionPrompt = ai.definePrompt({
   - The mechanism of action for the interaction.
   - A clear recommendation for the user.
   - The severity of the interaction (High, Moderate, Low, or Unknown).
+
+  The entire response, including all fields, must be in the following language: {{language}}.
   
   If you cannot find any interactions, return an empty list. Do not invent interactions.
   Only return information based on reliable medical knowledge.`,

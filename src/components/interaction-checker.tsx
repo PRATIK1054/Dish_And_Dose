@@ -54,7 +54,7 @@ export function InteractionChecker() {
     setResults([]);
 
     try {
-      const response = await checkInteraction({ drugName: searchTerm });
+      const response = await checkInteraction({ drugName: searchTerm, language: lang });
       setResults(response.interactions);
     } catch (error) {
       console.error("Failed to fetch interactions:", error);
@@ -62,7 +62,7 @@ export function InteractionChecker() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [lang]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     handleSearch(values.drugName);
@@ -77,8 +77,10 @@ export function InteractionChecker() {
   }, [searchParams, form, handleSearch]);
 
   function handleSpeak() {
-    if (isSpeaking) {
-      cancel();
+    if (isSpeaking && !isPaused) {
+      pause();
+    } else if (isPaused) {
+      resume();
     } else if (results.length > 0) {
       const textToSpeak = results.map(result => 
         `${dict.speakInteractionFor || 'Interaction for'} ${result.drugName}. ${dict.speakSeverity || 'Severity'}: ${result.severity}. ${dict.speakInteractsWith || 'Interacts with'} ${result.foodInteraction}. ${dict.speakRecommendation || 'Recommendation'}: ${result.recommendation}`
@@ -90,7 +92,7 @@ export function InteractionChecker() {
 
       if (voices) {
         // Prefer a standard, non-premium Google voice for simplicity and consistency
-        voiceToUse = voices.find(v => v.lang === langCode && v.name === 'Google US English') || voices.find(v => v.lang === langCode);
+        voiceToUse = voices.find(v => v.lang === langCode && v.name.includes('Google') && !v.name.includes('Premium')) || voices.find(v => v.lang === langCode);
       }
 
       speak({ text: textToSpeak, lang: langCode, voice: voiceToUse });
@@ -149,13 +151,13 @@ export function InteractionChecker() {
               {results.length > 0 && !isLoading && supported && (
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={handleSpeak}>
-                    <Volume2 className={isSpeaking && !isPaused ? 'text-accent animate-pulse' : ''} />
-                    <span className="sr-only">{isSpeaking ? "Stop" : "Speak"}</span>
+                    {isSpeaking && !isPaused ? <Pause /> : isPaused ? <Play />: <Volume2 />}
+                    <span className="sr-only">{isSpeaking && !isPaused ? "Pause" : "Speak"}</span>
                   </Button>
                   {isSpeaking && (
-                    <Button variant="ghost" size="icon" onClick={isPaused ? resume : pause}>
-                      {isPaused ? <Play /> : <Pause />}
-                      <span className="sr-only">{isPaused ? "Resume" : "Pause"}</span>
+                     <Button variant="ghost" size="icon" onClick={cancel}>
+                        <XCircle />
+                        <span className="sr-only">Stop</span>
                     </Button>
                   )}
                 </div>
