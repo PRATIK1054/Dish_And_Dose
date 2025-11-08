@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -34,7 +35,7 @@ export function InteractionChecker() {
   const [results, setResults] = useState<Interaction[]>([]);
   const [searchedTerm, setSearchedTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { speak, isSpeaking } = useSpeechSynthesis();
+  const { speak, isSpeaking, supported, getVoices } = useSpeechSynthesis();
   const { dict, lang } = useContext(AppContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -80,8 +81,16 @@ export function InteractionChecker() {
       const textToSpeak = results.map(result => 
         `${dict.speakInteractionFor || 'Interaction for'} ${result.drugName}. ${dict.speakSeverity || 'Severity'}: ${result.severity}. ${dict.speakInteractsWith || 'Interacts with'} ${result.foodInteraction}. ${dict.speakRecommendation || 'Recommendation'}: ${result.recommendation}`
       ).join('. ');
+      
       const langCode = langCodeMapping[lang] || 'en-US';
-      speak({ text: textToSpeak, lang: langCode });
+      const voices = getVoices();
+      let voiceToUse;
+
+      if (voices) {
+        voiceToUse = voices.find(v => v.lang === langCode && v.name.includes('Google')) || voices.find(v => v.lang === langCode);
+      }
+
+      speak({ text: textToSpeak, lang: langCode, voice: voiceToUse });
     }
   }
 
@@ -134,7 +143,7 @@ export function InteractionChecker() {
                 <CardTitle>{dict.resultsFor} "{searchedTerm}"</CardTitle>
                 {!isLoading && <CardDescription>{results.length} {dict.interactionsFound}</CardDescription>}
               </div>
-              {results.length > 0 && !isLoading && (
+              {results.length > 0 && !isLoading && supported && (
                 <Button variant="ghost" size="icon" onClick={handleSpeak} disabled={isSpeaking}>
                   <Volume2 className={isSpeaking ? 'text-accent animate-pulse' : ''} />
                 </Button>
@@ -184,3 +193,5 @@ export function InteractionChecker() {
     </div>
   );
 }
+
+    
