@@ -38,9 +38,9 @@
     "recommendation": "सिफ़ारिश",
     "noInteractionsFound": "कोई इंटरेक्शन नहीं मिला",
     "noInteractionsFoundMessage": "हमें \\"{searchedTerm}\\" के लिए कोई इंटरेक्शन नहीं मिला। चिकित्सीय सलाह के लिए हमेशा अपने स्वास्थ्य सेवा प्रदाता से परामर्श करें।",
+    "mechanismOfAction": "कार्रवाई का तंत्र",
     "speakInteractionFor": "के लिए इंटरेक्शन",
     "speakSeverity": "गंभीरता",
     "speakInteractsWith": "के साथ इंटरैक्ट करता है",
-    "speakRecommendation": "सिफ़ारिश",
-    "mechanismOfAction": "कार्रवाई का तंत्र"
+    "speakRecommendation": "सिफ़ारिश"
 }
