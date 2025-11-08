@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { useCollection, useFirebase, useMemoFirebase } from "@/firebase";
-import { collection, doc, addDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc } from "firebase/firestore";
 import { addDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 
 const MEDICATIONS_COLLECTION = "medications";
@@ -18,12 +18,12 @@ export function useMedications() {
   const { data: medications, isLoading: isLoadingMedications } = useCollection(medicationsCollection);
 
   const addMedication = useCallback((medName: string) => {
-    if (!medicationsCollection) return;
+    if (!medicationsCollection || !user) return;
     const medExists = medications?.some(med => med.name.toLowerCase() === medName.toLowerCase());
     if(medExists) return;
 
-    addDocumentNonBlocking(medicationsCollection, { name: medName });
-  }, [medicationsCollection, medications]);
+    addDocumentNonBlocking(medicationsCollection, { name: medName, userId: user.uid });
+  }, [medicationsCollection, medications, user]);
 
   const removeMedication = useCallback((medId: string) => {
     if (!medicationsCollection) return;
