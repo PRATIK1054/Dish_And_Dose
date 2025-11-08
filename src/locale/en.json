@@ -38,9 +38,9 @@
     "recommendation": "Recommendation",
     "noInteractionsFound": "No Interactions Found",
     "noInteractionsFoundMessage": "We couldn't find any interactions for \\"{searchedTerm}\\". Always consult your healthcare provider for medical advice.",
+    "mechanismOfAction": "Mechanism of Action",
     "speakInteractionFor": "Interaction for",
     "speakSeverity": "Severity",
     "speakInteractsWith": "Interacts with",
-    "speakRecommendation": "Recommendation",
-    "mechanismOfAction": "Mechanism of Action"
+    "speakRecommendation": "Recommendation"
 }
