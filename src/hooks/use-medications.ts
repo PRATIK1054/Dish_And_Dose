@@ -1,51 +1,45 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useCollection, useFirebase, useMemoFirebase } from "@/firebase";
+import { collection, doc, addDoc, deleteDoc } from "firebase/firestore";
+import { addDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 
-const MEDICATIONS_STORAGE_KEY = "medconnect_medications";
+const MEDICATIONS_COLLECTION = "medications";
 
 export function useMedications() {
-  const [medications, setMedications] = useState<string[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { firestore, user, isUserLoading } = useFirebase();
 
-  useEffect(() => {
-    try {
-      const storedMeds = window.localStorage.getItem(MEDICATIONS_STORAGE_KEY);
-      if (storedMeds) {
-        setMedications(JSON.parse(storedMeds));
-      }
-    } catch (error) {
-      console.error("Failed to load medications from localStorage", error);
-    } finally {
-      setIsLoaded(true);
-    }
-  }, []);
+  const medicationsCollection = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'users', user.uid, MEDICATIONS_COLLECTION);
+  }, [firestore, user]);
 
-  const updateLocalStorage = (newMeds: string[]) => {
-    try {
-      window.localStorage.setItem(MEDICATIONS_STORAGE_KEY, JSON.stringify(newMeds));
-    } catch (error) {
-      console.error("Failed to save medications to localStorage", error);
-    }
+  const { data: medications, isLoading: isLoadingMedications } = useCollection(medicationsCollection);
+
+  const addMedication = useCallback((medName: string) => {
+    if (!medicationsCollection) return;
+    const medExists = medications?.some(med => med.name.toLowerCase() === medName.toLowerCase());
+    if(medExists) return;
+
+    addDocumentNonBlocking(medicationsCollection, { name: medName });
+  }, [medicationsCollection, medications]);
+
+  const removeMedication = useCallback((medId: string) => {
+    if (!medicationsCollection) return;
+    const medRef = doc(medicationsCollection, medId);
+    deleteDocumentNonBlocking(medRef);
+  }, [medicationsCollection]);
+
+  const medicationNames = useMemoFirebase(() => {
+    return medications ? medications.map(m => m.name) : [];
+  }, [medications]);
+
+  return {
+    medications: medicationNames, 
+    medicationDocs: medications,
+    addMedication, 
+    removeMedication, 
+    isLoaded: !isUserLoading && !isLoadingMedications
   };
-
-  const addMedication = useCallback((med: string) => {
-    setMedications((prevMeds) => {
-      const lowerCaseMed = med.toLowerCase();
-      if (prevMeds.some(m => m.toLowerCase() === lowerCaseMed)) return prevMeds;
-      const newMeds = [...prevMeds, med];
-      updateLocalStorage(newMeds);
-      return newMeds;
-    });
-  }, []);
-
-  const removeMedication = useCallback((med: string) => {
-    setMedications((prevMeds) => {
-      const newMeds = prevMeds.filter((m) => m !== med);
-      updateLocalStorage(newMeds);
-      return newMeds;
-    });
-  }, []);
-
-  return { medications, addMedication, removeMedication, isLoaded };
 }

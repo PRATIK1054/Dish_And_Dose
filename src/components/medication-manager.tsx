@@ -15,7 +15,7 @@ const formSchema = z.object({
 });
 
 export function MedicationManager() {
-  const { medications, addMedication, removeMedication, isLoaded } = useMedications();
+  const { medicationDocs, addMedication, removeMedication, isLoaded } = useMedications();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,17 +68,17 @@ export function MedicationManager() {
             <div className="flex items-center justify-center h-24">
               <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
             </div>
-          ) : medications.length > 0 ? (
+          ) : medicationDocs && medicationDocs.length > 0 ? (
             <ul className="space-y-2">
-              {medications.map((med) => (
-                <li key={med} className="flex items-center justify-between p-2 rounded-md bg-secondary">
+              {medicationDocs.map((med) => (
+                <li key={med.id} className="flex items-center justify-between p-2 rounded-md bg-secondary">
                   <div className="flex items-center gap-2">
                     <Pill className="w-4 h-4 text-secondary-foreground" />
-                    <span className="font-medium text-secondary-foreground">{med}</span>
+                    <span className="font-medium text-secondary-foreground">{med.name}</span>
                   </div>
-                  <Button variant="ghost" size="icon" className="w-8 h-8" onClick={() => removeMedication(med)}>
+                  <Button variant="ghost" size="icon" className="w-8 h-8" onClick={() => removeMedication(med.id)}>
                     <X className="w-4 h-4" />
-                    <span className="sr-only">Remove {med}</span>
+                    <span className="sr-only">Remove {med.name}</span>
                   </Button>
                 </li>
               ))}
