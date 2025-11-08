@@ -1,0 +1,135 @@
+/**
+ * @fileoverview Firestore Security Rules for the Dish & Dose application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for personal data (users, profiles, medications, reminders)
+ * and allows public read access to food-drug interaction data.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user account information. Only the user can read/write their own document.
+ * - /users/{userId}/profile: Stores user profile details. Only the user can read/write their own profile.
+ * - /users/{userId}/medications/{medicationId}: Stores medication data for a specific user. Only the user can manage their medications.
+ * - /users/{userId}/reminders/{reminderId}: Stores medication reminders for a user. Only the user can manage their reminders.
+ * - /interactions/{interactionId}: Stores public information about food-drug interactions. Anyone can read this data.
+ *
+ * Key Security Decisions:
+ * - User listing is disallowed for privacy.
+ * - Interaction data is publicly readable to facilitate broad access to important health information.
+ * - Default security posture for ambiguous cases is "deny all."
+ *
+ * Denormalization for Authorization:
+ * - User-specific data (medications, reminders, profiles) is stored under the /users/{userId} path. This path-based ownership eliminates the need for `get()` calls to verify ownership.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user account documents.
+     * @path /users/{userId}
+     * @allow (create) - Authenticated user can create their own user document if the userId matches their auth UID.
+     * @allow (get, update, delete) - Authenticated user can only access their own user document if the userId matches their auth UID.
+     * @deny (create) - If the authenticated user attempts to create a user document with a userId that does not match their auth UID.
+     * @deny (get, update, delete) - If an unauthenticated user attempts to access any user document.
+     * @principle Enforces document ownership and requires authentication.
+     */
+    match /users/{userId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to user profile documents.
+     * @path /users/{userId}/profile
+     * @allow (create) - Authenticated user can create their own profile if the userId matches their auth UID.
+     * @allow (get, update, delete) - Authenticated user can only access their own profile if the userId matches their auth UID.
+     * @deny (create) - If the authenticated user attempts to create a profile with a userId that does not match their auth UID.
+     * @deny (get, update, delete) - If an unauthenticated user attempts to access any profile.
+     * @principle Enforces document ownership and requires authentication.
+     */
+    match /users/{userId}/profile {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to medication documents.
+     * @path /users/{userId}/medications/{medicationId}
+     * @allow (create) - Authenticated user can create medication entries for themselves.
+     * @allow (get, update, delete) - Authenticated user can only access their own medication entries.
+     * @deny (create) - If the authenticated user attempts to create a medication entry for another user.
+     * @deny (get, update, delete) - If an unauthenticated user attempts to access any medication entries.
+     * @principle Enforces document ownership for medications.
+     */
+    match /users/{userId}/medications/{medicationId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to reminder documents.
+     * @path /users/{userId}/reminders/{reminderId}
+     * @allow (create) - Authenticated user can create reminder entries for themselves.
+     * @allow (get, update, delete) - Authenticated user can only access their own reminder entries.
+     * @deny (create) - If the authenticated user attempts to create a reminder entry for another user.
+     * @deny (get, update, delete) - If an unauthenticated user attempts to access any reminder entries.
+     * @principle Enforces document ownership for reminders.
+     */
+    match /users/{userId}/reminders/{reminderId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+       function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to interaction documents.
+     * @path /interactions/{interactionId}
+     * @allow (get, list) - Anyone can read interaction documents.
+     * @deny (create, update, delete) - No one can create, update, or delete interaction documents.
+     * @principle Allows public read access but restricts write access.
+     */
+    match /interactions/{interactionId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+  }
+}

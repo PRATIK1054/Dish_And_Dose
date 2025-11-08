@@ -1,0 +1,283 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Dish & Dose application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "age": {
+          "type": "number",
+          "description": "User's age."
+        },
+        "gender": {
+          "type": "string",
+          "description": "User's gender."
+        },
+        "conditions": {
+          "type": "string",
+          "description": "User's medical conditions."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "Medication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Medication",
+      "type": "object",
+      "description": "Represents a medication that a user might be taking.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the medication."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Medication)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the medication."
+        },
+        "dosage": {
+          "type": "string",
+          "description": "Dosage of the medication."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "name"
+      ]
+    },
+    "Interaction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Interaction",
+      "type": "object",
+      "description": "Represents a food-drug interaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the interaction."
+        },
+        "drugName": {
+          "type": "string",
+          "description": "Name of the drug involved in the interaction."
+        },
+        "foodInteractionType": {
+          "type": "string",
+          "description": "Type of food interaction (e.g., grapefruit juice)."
+        },
+        "recommendations": {
+          "type": "string",
+          "description": "Recommendations for managing the interaction."
+        }
+      },
+      "required": [
+        "id",
+        "drugName",
+        "foodInteractionType",
+        "recommendations"
+      ]
+    },
+    "Reminder": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reminder",
+      "type": "object",
+      "description": "Represents a reminder for medication timing.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reminder."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Reminder)"
+        },
+        "medicationId": {
+          "type": "string",
+          "description": "Reference to Medication. (Relationship: Medication 1:N Reminder)"
+        },
+        "dateTime": {
+          "type": "string",
+          "description": "Date and time for the reminder.",
+          "format": "date-time"
+        },
+        "mealTiming": {
+          "type": "string",
+          "description": "Timing related to the meal (e.g., before food, after food)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "medicationId",
+        "dateTime",
+        "mealTiming"
+      ]
+    },
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user profile in the Dish & Dose application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:1 UserProfile)"
+        },
+        "age": {
+          "type": "number",
+          "description": "User's age."
+        },
+        "gender": {
+          "type": "string",
+          "description": "User's gender."
+        },
+        "conditions": {
+          "type": "string",
+          "description": "User's medical conditions."
+        },
+        "regularMedicationList": {
+          "type": "array",
+          "description": "List of regular medications.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recentSearches": {
+          "type": "array",
+          "description": "List of recent searches.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alerts": {
+          "type": "array",
+          "description": "List of alerts.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user information.  Accessible only by the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information.  Accessible only by the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/medications/{medicationId}",
+        "definition": {
+          "entityName": "Medication",
+          "schema": {
+            "$ref": "#/backend/entities/Medication"
+          },
+          "description": "Stores medication information for a specific user. Accessible only by the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "medicationId",
+              "description": "The unique identifier for the medication."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/reminders/{reminderId}",
+        "definition": {
+          "entityName": "Reminder",
+          "schema": {
+            "$ref": "#/backend/entities/Reminder"
+          },
+          "description": "Stores reminders for a specific user's medications. Accessible only by the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "reminderId",
+              "description": "The unique identifier for the reminder."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/interactions/{interactionId}",
+        "definition": {
+          "entityName": "Interaction",
+          "schema": {
+            "$ref": "#/backend/entities/Interaction"
+          },
+          "description": "Stores information about food-drug interactions.  Globally readable.",
+          "params": [
+            {
+              "name": "interactionId",
+              "description": "The unique identifier for the interaction."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage user data, medication information, interactions, reminders, and user profiles for the Dish & Dose application.  It uses path-based ownership for user-specific data and avoids hierarchical authorization dependencies by denormalizing any necessary authorization data. This ensures that security rules can be simple, robust, and easily debuggable. Specifically:\n\n*   **Users Collection:** Stores basic user information. Access is limited to authenticated users.\n*   **User Profiles:**  Each user has a dedicated profile document under `/users/{userId}/profile`. This uses path-based ownership, simplifying rules.\n*   **Medications and Reminders:**  Medications and Reminders are stored as subcollections of the `/users/{userId}` collection to leverage path-based ownership and avoid authorization `get()` calls.  The userId is inherited from the path and does not need to be explicitly duplicated in the document. QAPs are supported by the structure due to the use of segregation: all medication and reminder documents stored at path `/users/{userId}/medications/{medicationId}` share the same security requirements; ditto for `/users/{userId}/reminders/{reminderId}`.\n*   **Interactions:** Interactions are stored in a top-level collection `/interactions`. This collection is designed to be globally readable, allowing any user to look up potential food-drug interactions.\n\nThis structure enforces Authorization Independence.  There are no `get()` calls to parent documents in the rules, because authorization context is derived from the document path itself.  All list operations can be secured by the path and `request.auth.uid`, ensuring QAPs."
+  }
+}
