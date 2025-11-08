@@ -192,21 +192,6 @@ export default function ProfilePage() {
               </div>
             </>
           )}
-
-          <Separator />
-          <div className="space-y-2">
-            <Label htmlFor="language-select">{dict.language}</Label>
-            <Select value={lang} onValueChange={setLang}>
-              <SelectTrigger id="language-select" className="max-w-xs">
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="English">English</SelectItem>
-                <SelectItem value="Hindi">हिन्दी (Hindi)</SelectItem>
-                <SelectItem value="Marathi">मराठी (Marathi)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </CardContent>
       </Card>
     </div>

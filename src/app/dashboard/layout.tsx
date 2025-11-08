@@ -15,7 +15,6 @@ import {
 import React, { useContext } from 'react';
 import { AppContext } from '@/context/app-context';
 
-
 import {
   SidebarProvider,
   Sidebar,
@@ -27,9 +26,12 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarInset,
+  SidebarGroup,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function DashboardLayout({
   children,
@@ -37,7 +39,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { dict } = useContext(AppContext);
+  const { dict, lang, setLang } = useContext(AppContext);
 
   const navItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: dict.dashboard },
@@ -88,6 +90,33 @@ export default function DashboardLayout({
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
+            <SidebarGroup className="p-0 group-data-[collapsible=icon]:-mt-8">
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <Label className="px-2 text-xs font-medium text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">{dict.language}</Label>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <Select value={lang} onValueChange={setLang}>
+                            <SidebarMenuButton asChild variant="outline" className="group-data-[collapsible=icon]:hidden">
+                                <SelectTrigger className="h-8">
+                                    <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                            </SidebarMenuButton>
+                            <SidebarMenuButton asChild tooltip={{children: dict.language}} className="hidden group-data-[collapsible=icon]:flex">
+                                <Link href="#">
+                                    <Languages />
+                                    <span className="sr-only">{dict.language}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                            <SelectContent>
+                                <SelectItem value="English">English</SelectItem>
+                                <SelectItem value="Hindi">हिन्दी (Hindi)</SelectItem>
+                                <SelectItem value="Marathi">मराठी (Marathi)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
