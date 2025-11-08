@@ -37,7 +37,7 @@
     "foodInteraction": "अन्न संवाद",
     "recommendation": "शिफारस",
     "noInteractionsFound": "कोणतीही परस्परक्रिया आढळली नाही",
-    "noInteractionsFoundMessage": "आम्हाला \\"{searchedTerm}\\" साठी कोणतीही परस्परक्रिया आढळली नाही. वैद्यकीय सल्ल्यासाठी नेहमी तुमच्या आरोग्य सेवा प्रदात्याचा सल्ला घ्या.",
+    "noInteractionsFoundMessage": "आम्हाला \"{searchedTerm}\" साठी कोणतीही परस्परक्रिया आढळली नाही. वैद्यकीय सल्ल्यासाठी नेहमी तुमच्या आरोग्य सेवा प्रदात्याचा सल्ला घ्या.",
     "mechanismOfAction": "कृतीची यंत्रणा",
     "speakInteractionFor": "साठी संवाद",
     "speakSeverity": "गंभीरता",
