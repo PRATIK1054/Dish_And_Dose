@@ -9,6 +9,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Plus, X, Pill, Loader2 } from "lucide-react";
+import React, { useContext } from 'react';
+import { AppContext } from "@/context/app-context";
 
 const formSchema = z.object({
   medicationName: z.string().min(2, { message: "Name is too short." }),
@@ -16,6 +18,7 @@ const formSchema = z.object({
 
 export function MedicationManager() {
   const { medicationDocs, addMedication, removeMedication, isLoaded } = useMedications();
+  const { dict } = useContext(AppContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,7 +87,7 @@ export function MedicationManager() {
               ))}
             </ul>
           ) : (
-            <p className="py-8 text-center text-muted-foreground">You haven't added any medications yet.</p>
+            <p className="py-8 text-center text-muted-foreground">{dict.noMedications || 'You haven\'t added any medications yet.'}</p>
           )}
         </CardContent>
       </Card>

@@ -42,5 +42,6 @@
     "speakInteractionFor": "साठी संवाद",
     "speakSeverity": "गंभीरता",
     "speakInteractsWith": "यांच्याशी संवाद साधतो",
-    "speakRecommendation": "शिफारस"
+    "speakRecommendation": "शिफारस",
+    "noMedications": "तुम्ही अजून कोणतीही औषधे जोडलेली नाहीत."
 }

@@ -42,5 +42,6 @@
     "speakInteractionFor": "के लिए इंटरेक्शन",
     "speakSeverity": "गंभीरता",
     "speakInteractsWith": "के साथ इंटरैक्ट करता है",
-    "speakRecommendation": "सिफ़ारिश"
+    "speakRecommendation": "सिफ़ारिश",
+    "noMedications": "आपने अभी तक कोई दवा नहीं जोड़ी है।"
 }

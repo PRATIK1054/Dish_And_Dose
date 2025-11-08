@@ -42,5 +42,6 @@
     "speakInteractionFor": "Interaction for",
     "speakSeverity": "Severity",
     "speakInteractsWith": "Interacts with",
-    "speakRecommendation": "Recommendation"
+    "speakRecommendation": "Recommendation",
+    "noMedications": "You haven't added any medications yet."
 }
