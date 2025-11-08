@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { dict, lang, setLang } = useContext(AppContext);
+  const { dict } = useContext(AppContext);
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   
