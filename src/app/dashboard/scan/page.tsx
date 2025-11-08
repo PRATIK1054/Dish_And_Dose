@@ -1,41 +1,122 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import jsQR from "jsqr";
 import { useMedications } from "@/hooks/use-medications";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { QrCode, Loader2, CheckCircle } from "lucide-react";
+import { QrCode, Loader2, CheckCircle, VideoOff, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function ScanPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
   const { addMedication } = useMedications();
   const { toast } = useToast();
 
-  const handleScan = () => {
-    setIsScanning(true);
-    setScanComplete(false);
-
-    setTimeout(() => {
-      const scannedMed = "Ibuprofen";
-      addMedication(scannedMed);
-      setIsScanning(false);
-      setScanComplete(true);
-
-      toast({
-        title: "Medication Added",
-        description: `"${scannedMed}" has been added to your list.`,
-      });
-
-      setTimeout(() => {
-        router.push(`/dashboard/interaction-check?drugName=${scannedMed}`);
-      }, 1500);
-    }, 2000);
+  const cleanupCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+    }
   };
 
+  useEffect(() => {
+    return () => cleanupCamera();
+  }, []);
+
+  const startScan = async () => {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setIsScanning(true);
+          requestAnimationFrame(tick);
+        }
+      } else {
+        setHasCameraPermission(false);
+      }
+    } catch (err) {
+      console.error("Camera access denied:", err);
+      setHasCameraPermission(false);
+    }
+  };
+
+  const tick = () => {
+    if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      if (ctx) {
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+
+        if (code) {
+          handleScanSuccess(code.data);
+          return; // Stop the scanning loop
+        }
+      }
+    }
+    if (isScanning) {
+      requestAnimationFrame(tick);
+    }
+  };
+  
+  useEffect(() => {
+    let animationFrameId: number;
+
+    const continuousTick = () => {
+      tick();
+      animationFrameId = requestAnimationFrame(continuousTick);
+    };
+
+    if (isScanning) {
+      animationFrameId = requestAnimationFrame(continuousTick);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScanning]);
+
+
+  const handleScanSuccess = (data: string) => {
+    if (scanComplete) return;
+
+    setIsScanning(false);
+    setScanComplete(true);
+    cleanupCamera();
+
+    // Assuming the QR code data is just the medication name
+    const scannedMed = data; 
+    addMedication(scannedMed);
+
+    toast({
+      title: "Medication Added",
+      description: `"${scannedMed}" has been added to your list.`,
+    });
+
+    setTimeout(() => {
+      router.push(`/dashboard/interaction-check?drugName=${encodeURIComponent(scannedMed)}`);
+    }, 1500);
+  };
+  
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold font-headline">Scan Prescription</h1>
@@ -45,12 +126,17 @@ export default function ScanPage() {
           <CardDescription>Scan the QR code on your prescription to automatically add medications.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center gap-4 p-8">
-          <div className="p-8 border-4 border-dashed rounded-lg border-muted">
-            <QrCode className="w-24 h-24 text-muted-foreground" />
+          <div className="relative w-64 h-64 border-4 border-dashed rounded-lg border-muted flex items-center justify-center overflow-hidden">
+            {isScanning ? (
+              <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
+            ) : (
+              <QrCode className="w-24 h-24 text-muted-foreground" />
+            )}
+            <canvas ref={canvasRef} className="hidden" />
           </div>
 
           {!isScanning && !scanComplete && (
-            <Button onClick={handleScan} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={startScan} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
               Start Scan
             </Button>
           )}
@@ -58,7 +144,7 @@ export default function ScanPage() {
           {isScanning && (
             <div className="flex items-center gap-2 text-muted-foreground animate-pulse">
               <Loader2 className="animate-spin" />
-              <span>Scanning for medication...</span>
+              <span>Scanning for QR code...</span>
             </div>
           )}
 
@@ -68,6 +154,17 @@ export default function ScanPage() {
               <span>Scan complete! Redirecting...</span>
             </div>
           )}
+
+          {hasCameraPermission === false && (
+            <Alert variant="destructive">
+              <AlertTriangle className="w-4 h-4" />
+              <AlertTitle>Camera Access Denied</AlertTitle>
+              <AlertDescription>
+                Please enable camera permissions in your browser settings to use this feature.
+              </AlertDescription>
+            </Alert>
+          )}
+
         </CardContent>
       </Card>
     </div>
