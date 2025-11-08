@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import jsQR from "jsqr";
 import { useMedications } from "@/hooks/use-medications";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { QrCode, Loader2, CheckCircle, VideoOff, AlertTriangle } from "lucide-react";
+import { QrCode, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -19,39 +19,39 @@ export default function ScanPage() {
   const router = useRouter();
   const { addMedication } = useMedications();
   const { toast } = useToast();
+  const streamRef = useRef<MediaStream | null>(null);
 
-  const cleanupCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach((track) => track.stop());
+  const cleanupCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
-  };
-
-  useEffect(() => {
-    return () => cleanupCamera();
   }, []);
 
-  const startScan = async () => {
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        setHasCameraPermission(true);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          setIsScanning(true);
-          requestAnimationFrame(tick);
-        }
-      } else {
-        setHasCameraPermission(false);
-      }
-    } catch (err) {
-      console.error("Camera access denied:", err);
-      setHasCameraPermission(false);
-    }
-  };
+  const handleScanSuccess = useCallback((data: string) => {
+    if (scanComplete) return;
 
-  const tick = () => {
+    setIsScanning(false);
+    setScanComplete(true);
+    cleanupCamera();
+
+    const scannedMed = data;
+    addMedication(scannedMed);
+
+    toast({
+      title: "Medication Added",
+      description: `"${scannedMed}" has been added to your list.`,
+    });
+
+    setTimeout(() => {
+      router.push(`/dashboard/interaction-check?drugName=${encodeURIComponent(scannedMed)}`);
+    }, 1500);
+  }, [scanComplete, cleanupCamera, addMedication, toast, router]);
+
+  const tick = useCallback(() => {
     if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -62,20 +62,20 @@ export default function ScanPage() {
         canvas.width = video.videoWidth;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: "dontInvert",
-        });
+        try {
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
 
-        if (code) {
-          handleScanSuccess(code.data);
-          return; // Stop the scanning loop
+          if (code) {
+            handleScanSuccess(code.data);
+          }
+        } catch (error) {
+          console.error("jsQR error:", error);
         }
       }
     }
-    if (isScanning) {
-      requestAnimationFrame(tick);
-    }
-  };
+  }, [handleScanSuccess]);
   
   useEffect(() => {
     let animationFrameId: number;
@@ -90,31 +90,36 @@ export default function ScanPage() {
     }
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if(animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isScanning]);
+  }, [isScanning, tick]);
+
+  useEffect(() => {
+    return () => cleanupCamera();
+  }, [cleanupCamera]);
 
 
-  const handleScanSuccess = (data: string) => {
-    if (scanComplete) return;
-
-    setIsScanning(false);
-    setScanComplete(true);
-    cleanupCamera();
-
-    // Assuming the QR code data is just the medication name
-    const scannedMed = data; 
-    addMedication(scannedMed);
-
-    toast({
-      title: "Medication Added",
-      description: `"${scannedMed}" has been added to your list.`,
-    });
-
-    setTimeout(() => {
-      router.push(`/dashboard/interaction-check?drugName=${encodeURIComponent(scannedMed)}`);
-    }, 1500);
+  const startScan = async () => {
+    setScanComplete(false);
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        streamRef.current = stream;
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play(); // Make sure video plays
+          setIsScanning(true);
+        }
+      } else {
+        setHasCameraPermission(false);
+      }
+    } catch (err) {
+      console.error("Camera access denied:", err);
+      setHasCameraPermission(false);
+    }
   };
   
   return (
@@ -127,9 +132,8 @@ export default function ScanPage() {
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center gap-4 p-8">
           <div className="relative w-64 h-64 border-4 border-dashed rounded-lg border-muted flex items-center justify-center overflow-hidden">
-            {isScanning ? (
-              <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-            ) : (
+             <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted hidden={!isScanning} />
+            {!isScanning && (
               <QrCode className="w-24 h-24 text-muted-foreground" />
             )}
             <canvas ref={canvasRef} className="hidden" />
