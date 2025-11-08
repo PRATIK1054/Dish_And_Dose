@@ -14,6 +14,7 @@ interface SpeakParams {
 
 export const useSpeechSynthesis = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [supported, setSupported] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
@@ -31,6 +32,8 @@ export const useSpeechSynthesis = () => {
 
       return () => {
         window.speechSynthesis.onvoiceschanged = null;
+        // Clean up speech synthesis on component unmount
+        window.speechSynthesis.cancel();
       }
     }
   }, [handleVoicesChanged]);
@@ -52,13 +55,23 @@ export const useSpeechSynthesis = () => {
     utterance.pitch = params.pitch || 1;
     utterance.volume = params.volume || 1;
     
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsPaused(false);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
     utterance.onerror = (e) => {
       console.error("Speech synthesis error", e);
       setIsSpeaking(false);
+      setIsPaused(false);
     }
-
+    
+    // onpause and onresume are not consistently fired,
+    // so we manage the isPaused state in our pause() and resume() functions.
+    
     window.speechSynthesis.speak(utterance);
   };
 
@@ -66,9 +79,20 @@ export const useSpeechSynthesis = () => {
     if (!supported) return;
     window.speechSynthesis.cancel();
     setIsSpeaking(false);
+    setIsPaused(false);
   };
 
-  return { speak, cancel, isSpeaking, supported, getVoices };
-};
+  const pause = () => {
+    if (!supported || !isSpeaking) return;
+    window.speechSynthesis.pause();
+    setIsPaused(true);
+  };
 
-    
+  const resume = () => {
+    if (!supported || !isSpeaking) return;
+    window.speechSynthesis.resume();
+    setIsPaused(false);
+  };
+
+  return { speak, cancel, pause, resume, isSpeaking, isPaused, supported, getVoices };
+};

@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Volume2, Search, XCircle, Loader2 } from "lucide-react";
+import { Volume2, Search, XCircle, Loader2, Pause, Play } from "lucide-react";
 import { Separator } from "./ui/separator";
 
 const formSchema = z.object({
@@ -35,7 +35,7 @@ export function InteractionChecker() {
   const [results, setResults] = useState<Interaction[]>([]);
   const [searchedTerm, setSearchedTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { speak, isSpeaking, supported, getVoices } = useSpeechSynthesis();
+  const { speak, cancel, pause, resume, isSpeaking, isPaused, supported, getVoices } = useSpeechSynthesis();
   const { dict, lang } = useContext(AppContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -77,7 +77,9 @@ export function InteractionChecker() {
   }, [searchParams, form, handleSearch]);
 
   function handleSpeak() {
-    if (results.length > 0) {
+    if (isSpeaking) {
+      cancel();
+    } else if (results.length > 0) {
       const textToSpeak = results.map(result => 
         `${dict.speakInteractionFor || 'Interaction for'} ${result.drugName}. ${dict.speakSeverity || 'Severity'}: ${result.severity}. ${dict.speakInteractsWith || 'Interacts with'} ${result.foodInteraction}. ${dict.speakRecommendation || 'Recommendation'}: ${result.recommendation}`
       ).join('. ');
@@ -87,7 +89,8 @@ export function InteractionChecker() {
       let voiceToUse;
 
       if (voices) {
-        voiceToUse = voices.find(v => v.lang === langCode && v.name.includes('Google')) || voices.find(v => v.lang === langCode);
+        // Prefer a standard, non-premium Google voice for simplicity and consistency
+        voiceToUse = voices.find(v => v.lang === langCode && v.name === 'Google US English') || voices.find(v => v.lang === langCode);
       }
 
       speak({ text: textToSpeak, lang: langCode, voice: voiceToUse });
@@ -144,9 +147,18 @@ export function InteractionChecker() {
                 {!isLoading && <CardDescription>{results.length} {dict.interactionsFound}</CardDescription>}
               </div>
               {results.length > 0 && !isLoading && supported && (
-                <Button variant="ghost" size="icon" onClick={handleSpeak} disabled={isSpeaking}>
-                  <Volume2 className={isSpeaking ? 'text-accent animate-pulse' : ''} />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" onClick={handleSpeak}>
+                    <Volume2 className={isSpeaking && !isPaused ? 'text-accent animate-pulse' : ''} />
+                    <span className="sr-only">{isSpeaking ? "Stop" : "Speak"}</span>
+                  </Button>
+                  {isSpeaking && (
+                    <Button variant="ghost" size="icon" onClick={isPaused ? resume : pause}>
+                      {isPaused ? <Play /> : <Pause />}
+                      <span className="sr-only">{isPaused ? "Resume" : "Pause"}</span>
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </CardHeader>
@@ -193,5 +205,3 @@ export function InteractionChecker() {
     </div>
   );
 }
-
-    
