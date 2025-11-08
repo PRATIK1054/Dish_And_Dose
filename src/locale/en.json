@@ -26,5 +26,20 @@
     "gender": "Gender",
     "medicalConditions": "Medical Conditions",
     "language": "Language",
-    "name": "Name"
+    "name": "Name",
+    "interactionCheckTitle": "Check for Food-Drug Interactions",
+    "interactionCheckDescription2": "Enter a drug name to see potential food interactions.",
+    "drugName": "Drug Name",
+    "drugNamePlaceholder": "e.g., Warfarin",
+    "check": "Check",
+    "resultsFor": "Results for",
+    "interactionsFound": "interaction(s) found.",
+    "foodInteraction": "Food Interaction",
+    "recommendation": "Recommendation",
+    "noInteractionsFound": "No Interactions Found",
+    "noInteractionsFoundMessage": "We couldn't find any interactions for \"{searchedTerm}\". Always consult your healthcare provider for medical advice.",
+    "speakInteractionFor": "Interaction for",
+    "speakSeverity": "Severity",
+    "speakInteractsWith": "Interacts with",
+    "speakRecommendation": "Recommendation"
 }

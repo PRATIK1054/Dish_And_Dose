@@ -1,12 +1,13 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { interactions, type Interaction } from "@/lib/interactions";
 import { useSpeechSynthesis } from "@/hooks/use-speech-synthesis";
+import { AppContext } from "@/context/app-context";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ export function InteractionChecker() {
   const [results, setResults] = useState<Interaction[]>([]);
   const [searchedTerm, setSearchedTerm] = useState("");
   const { speak, isSpeaking } = useSpeechSynthesis();
+  const { dict } = useContext(AppContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,7 +61,7 @@ export function InteractionChecker() {
   function handleSpeak() {
     if (results.length > 0) {
       const textToSpeak = results.map(result => 
-        `Interaction for ${result.drugName}. Severity: ${result.severity}. Interacts with ${result.foodInteraction}. Recommendation: ${result.recommendation}`
+        `${dict.speakInteractionFor || 'Interaction for'} ${result.drugName}. ${dict.speakSeverity || 'Severity'}: ${result.severity}. ${dict.speakInteractsWith || 'Interacts with'} ${result.foodInteraction}. ${dict.speakRecommendation || 'Recommendation'}: ${result.recommendation}`
       ).join('. ');
       speak({ text: textToSpeak });
     }
@@ -77,8 +79,8 @@ export function InteractionChecker() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Check for Food-Drug Interactions</CardTitle>
-          <CardDescription>Enter a drug name to see potential food interactions.</CardDescription>
+          <CardTitle>{dict.interactionCheckTitle}</CardTitle>
+          <CardDescription>{dict.interactionCheckDescription2}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -88,9 +90,9 @@ export function InteractionChecker() {
                 name="drugName"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel className="sr-only">Drug Name</FormLabel>
+                    <FormLabel className="sr-only">{dict.drugName}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Warfarin" {...field} />
+                      <Input placeholder={dict.drugNamePlaceholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -98,7 +100,7 @@ export function InteractionChecker() {
               />
               <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
                 <Search className="mr-2" />
-                Check
+                {dict.check}
               </Button>
             </form>
           </Form>
@@ -110,8 +112,8 @@ export function InteractionChecker() {
           <CardHeader>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="space-y-1">
-                <CardTitle>Results for "{searchedTerm}"</CardTitle>
-                <CardDescription>{results.length} interaction(s) found.</CardDescription>
+                <CardTitle>{dict.resultsFor} "{searchedTerm}"</CardTitle>
+                <CardDescription>{results.length} {dict.interactionsFound}</CardDescription>
               </div>
               {results.length > 0 && (
                 <Button variant="ghost" size="icon" onClick={handleSpeak} disabled={isSpeaking}>
@@ -132,11 +134,11 @@ export function InteractionChecker() {
                     <Separator className="my-2" />
                     <div className="grid gap-4 mt-2 sm:grid-cols-2">
                       <div>
-                        <h4 className="font-semibold">Food Interaction</h4>
+                        <h4 className="font-semibold">{dict.foodInteraction}</h4>
                         <p className="text-muted-foreground">{result.foodInteraction}</p>
                       </div>
                       <div>
-                        <h4 className="font-semibold">Recommendation</h4>
+                        <h4 className="font-semibold">{dict.recommendation}</h4>
                         <p className="text-muted-foreground">{result.recommendation}</p>
                       </div>
                     </div>
@@ -146,9 +148,9 @@ export function InteractionChecker() {
             ) : (
               <Alert variant="destructive">
                 <XCircle className="w-4 h-4" />
-                <AlertTitle>No Interactions Found</AlertTitle>
+                <AlertTitle>{dict.noInteractionsFound}</AlertTitle>
                 <AlertDescription>
-                  We couldn't find any interactions for "{searchedTerm}". Always consult your healthcare provider for medical advice.
+                  {dict.noInteractionsFoundMessage.replace('{searchedTerm}', searchedTerm)}
                 </AlertDescription>
               </Alert>
             )}

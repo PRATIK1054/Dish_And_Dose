@@ -26,5 +26,20 @@
     "gender": "लिंग",
     "medicalConditions": "वैद्यकीय परिस्थिती",
     "language": "भाषा",
-    "name": "नाव"
+    "name": "नाव",
+    "interactionCheckTitle": "अन्न-औषध परस्परक्रिया तपासा",
+    "interactionCheckDescription2": "संभाव्य अन्न संवाद पाहण्यासाठी औषधाचे नाव प्रविष्ट करा.",
+    "drugName": "औषधाचे नाव",
+    "drugNamePlaceholder": "उदा. वॉरफेरिन",
+    "check": "तपासा",
+    "resultsFor": "साठी निकाल",
+    "interactionsFound": "परस्परक्रिया आढळली.",
+    "foodInteraction": "अन्न संवाद",
+    "recommendation": "शिफारस",
+    "noInteractionsFound": "कोणतीही परस्परक्रिया आढळली नाही",
+    "noInteractionsFoundMessage": "आम्हाला \"{searchedTerm}\" साठी कोणतीही परस्परक्रिया आढळली नाही. वैद्यकीय सल्ल्यासाठी नेहमी तुमच्या आरोग्य सेवा प्रदात्याचा सल्ला घ्या.",
+    "speakInteractionFor": "साठी संवाद",
+    "speakSeverity": "गंभीरता",
+    "speakInteractsWith": "यांच्याशी संवाद साधतो",
+    "speakRecommendation": "शिफारस"
 }

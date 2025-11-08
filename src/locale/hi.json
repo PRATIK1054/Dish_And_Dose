@@ -26,5 +26,20 @@
     "gender": "लिंग",
     "medicalConditions": "चिकित्सा स्थितियां",
     "language": "भाषा",
-    "name": "नाम"
+    "name": "नाम",
+    "interactionCheckTitle": "खाद्य-दवा परस्पर क्रियाओं की जाँच करें",
+    "interactionCheckDescription2": "संभावित खाद्य सहभागिताओं को देखने के लिए दवा का नाम दर्ज करें।",
+    "drugName": "दवा का नाम",
+    "drugNamePlaceholder": "जैसे, वार्फरिन",
+    "check": "जाँच",
+    "resultsFor": "के लिए परिणाम",
+    "interactionsFound": "इंटरेक्शन मिला।",
+    "foodInteraction": "खाद्य संपर्क",
+    "recommendation": "सिफ़ारिश",
+    "noInteractionsFound": "कोई इंटरेक्शन नहीं मिला",
+    "noInteractionsFoundMessage": "हमें \"{searchedTerm}\" के लिए कोई इंटरेक्शन नहीं मिला। चिकित्सीय सलाह के लिए हमेशा अपने स्वास्थ्य सेवा प्रदाता से परामर्श करें।",
+    "speakInteractionFor": "के लिए इंटरेक्शन",
+    "speakSeverity": "गंभीरता",
+    "speakInteractsWith": "के साथ इंटरैक्ट करता है",
+    "speakRecommendation": "सिफ़ारिश"
 }
