@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UtensilsCrossed } from "lucide-react";
 import Link from "next/link";
 import { AppContext } from "@/context/app-context";
+import { Logo } from '@/components/ui/logo';
 
 export default function LoginPage() {
   const { dict } = useContext(AppContext);
@@ -24,7 +24,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm mx-4">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <UtensilsCrossed className="w-12 h-12 text-primary" />
+            <Logo className="w-12 h-12" />
           </div>
           <CardTitle className="text-3xl font-headline">{dict.title}</CardTitle>
           <CardDescription>

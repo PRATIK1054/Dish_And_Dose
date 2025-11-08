@@ -9,11 +9,11 @@ import {
   Pill,
   QrCode,
   ShieldAlert,
-  UtensilsCrossed,
   Languages,
 } from "lucide-react";
 import React, { useContext } from 'react';
 import { AppContext } from '@/context/app-context';
+import { Logo } from "@/components/ui/logo";
 
 import {
   SidebarProvider,
@@ -62,9 +62,9 @@ export default function DashboardLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="w-8 h-8 shrink-0 bg-primary/20 text-primary"
+              className="w-8 h-8 shrink-0"
             >
-              <UtensilsCrossed size={18} />
+              <Logo />
             </Button>
             <h1 className="text-xl font-bold text-foreground font-headline group-data-[collapsible=icon]:hidden">
               {dict.title}
@@ -139,7 +139,7 @@ export default function DashboardLayout({
       <SidebarInset>
         <header className="flex items-center justify-between p-4 bg-card md:hidden">
           <div className="flex items-center gap-2">
-            <UtensilsCrossed className="w-8 h-8 text-primary" />
+            <Logo className="w-8 h-8" />
             <h1 className="text-xl font-bold font-headline">{dict.title}</h1>
           </div>
           <SidebarTrigger />
