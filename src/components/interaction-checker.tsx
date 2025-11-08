@@ -154,11 +154,12 @@ export function InteractionChecker() {
                       <h3 className="text-lg font-semibold">{result.drugName}</h3>
                       <Badge variant={getSeverityBadgeVariant(result.severity)}>{result.severity}</Badge>
                     </div>
+                    <p className="text-sm text-muted-foreground">{dict.foodInteraction}: {result.foodInteraction}</p>
                     <Separator className="my-2" />
-                    <div className="grid gap-4 mt-2 sm:grid-cols-2">
+                    <div className="grid gap-4 mt-2">
                       <div>
-                        <h4 className="font-semibold">{dict.foodInteraction}</h4>
-                        <p className="text-muted-foreground">{result.foodInteraction}</p>
+                        <h4 className="font-semibold">{dict.mechanismOfAction || 'Mechanism of Action'}</h4>
+                        <p className="text-muted-foreground">{result.mechanismOfAction}</p>
                       </div>
                       <div>
                         <h4 className="font-semibold">{dict.recommendation}</h4>

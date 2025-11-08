@@ -37,9 +37,10 @@
     "foodInteraction": "Food Interaction",
     "recommendation": "Recommendation",
     "noInteractionsFound": "No Interactions Found",
-    "noInteractionsFoundMessage": "We couldn't find any interactions for \"{searchedTerm}\". Always consult your healthcare provider for medical advice.",
+    "noInteractionsFoundMessage": "We couldn't find any interactions for \\"{searchedTerm}\\". Always consult your healthcare provider for medical advice.",
     "speakInteractionFor": "Interaction for",
     "speakSeverity": "Severity",
     "speakInteractsWith": "Interacts with",
-    "speakRecommendation": "Recommendation"
+    "speakRecommendation": "Recommendation",
+    "mechanismOfAction": "Mechanism of Action"
 }

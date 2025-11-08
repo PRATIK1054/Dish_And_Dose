@@ -13,6 +13,7 @@ import { z } from 'zod';
 const InteractionSchema = z.object({
     drugName: z.string().describe('The name of the drug.'),
     foodInteraction: z.string().describe('The food or type of food that interacts with the drug.'),
+    mechanismOfAction: z.string().describe('The underlying biological or chemical reason for the interaction between the food and the drug.'),
     recommendation: z.string().describe('The recommendation to manage the interaction.'),
     severity: z.enum(['High', 'Moderate', 'Low', 'Unknown']).describe('The severity of the interaction.'),
 });
@@ -44,6 +45,7 @@ const interactionPrompt = ai.definePrompt({
   Provide a list of interactions. For each interaction, include:
   - The name of the drug.
   - The food or type of food that interacts with it.
+  - The mechanism of action for the interaction.
   - A clear recommendation for the user.
   - The severity of the interaction (High, Moderate, Low, or Unknown).
   
