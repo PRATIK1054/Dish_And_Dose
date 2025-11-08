@@ -22,12 +22,19 @@ const formSchema = z.object({
   drugName: z.string().min(2, { message: "Drug name must be at least 2 characters." }),
 });
 
+const langCodeMapping: Record<string, string> = {
+  English: 'en-US',
+  Hindi: 'hi-IN',
+  Marathi: 'mr-IN',
+};
+
+
 export function InteractionChecker() {
   const searchParams = useSearchParams();
   const [results, setResults] = useState<Interaction[]>([]);
   const [searchedTerm, setSearchedTerm] = useState("");
   const { speak, isSpeaking } = useSpeechSynthesis();
-  const { dict } = useContext(AppContext);
+  const { dict, lang } = useContext(AppContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,7 +70,8 @@ export function InteractionChecker() {
       const textToSpeak = results.map(result => 
         `${dict.speakInteractionFor || 'Interaction for'} ${result.drugName}. ${dict.speakSeverity || 'Severity'}: ${result.severity}. ${dict.speakInteractsWith || 'Interacts with'} ${result.foodInteraction}. ${dict.speakRecommendation || 'Recommendation'}: ${result.recommendation}`
       ).join('. ');
-      speak({ text: textToSpeak });
+      const langCode = langCodeMapping[lang] || 'en-US';
+      speak({ text: textToSpeak, lang: langCode });
     }
   }
 

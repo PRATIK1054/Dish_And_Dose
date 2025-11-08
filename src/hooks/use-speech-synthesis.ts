@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 
 interface SpeakParams {
   text: string;
+  lang?: string;
   voice?: SpeechSynthesisVoice;
   rate?: number;
   pitch?: number;
@@ -24,6 +25,7 @@ export const useSpeechSynthesis = () => {
     if (!supported || isSpeaking) return;
 
     const utterance = new SpeechSynthesisUtterance(params.text);
+    if (params.lang) utterance.lang = params.lang;
     if (params.voice) utterance.voice = params.voice;
     utterance.rate = params.rate || 1;
     utterance.pitch = params.pitch || 1;
