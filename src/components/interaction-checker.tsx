@@ -92,7 +92,7 @@ export function InteractionChecker() {
 
       if (voices) {
         // Prefer a standard, non-premium Google voice for simplicity and consistency
-        voiceToUse = voices.find(v => v.lang === langCode && v.name.includes('Google') && !v.name.includes('Premium')) || voices.find(v => v.lang === langCode);
+        voiceToUse = voices.find(v => v.lang === langCode && v.name.includes('Google') && !v.name.includes('Premium')) || voices.find(v => v.lang === langCode && v.default);
       }
 
       speak({ text: textToSpeak, lang: langCode, voice: voiceToUse });
@@ -181,7 +181,7 @@ export function InteractionChecker() {
                     <Separator className="my-2" />
                     <div className="grid gap-4 mt-2">
                       <div>
-                        <h4 className="font-semibold">{dict.mechanismOfAction || 'Mechanism of Action'}</h4>
+                        <h4 className="font-semibold">{dict.mechanismOfAction}</h4>
                         <p className="text-muted-foreground">{result.mechanismOfAction}</p>
                       </div>
                       <div>
