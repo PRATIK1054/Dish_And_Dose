@@ -28,6 +28,7 @@ export const useSpeechSynthesis = () => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       setSupported(true);
       handleVoicesChanged();
+      // Some browsers load voices asynchronously.
       window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
 
       return () => {
@@ -40,23 +41,32 @@ export const useSpeechSynthesis = () => {
     }
   }, [handleVoicesChanged]);
 
-  const getVoices = () => {
+  const getVoices = useCallback(() => {
+    // Some browsers like Safari do not fire onvoiceschanged, so we get voices directly.
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        const currentVoices = window.speechSynthesis.getVoices();
+        if (currentVoices.length) {
+            setVoices(currentVoices);
+            return currentVoices;
+        }
+    }
     return voices;
-  };
+  }, [voices]);
 
   const speak = (params: SpeakParams) => {
     if (!supported || isSpeaking || !params.text) return;
+
+    // Ensure we have the latest voices, especially for browsers that load them late.
+    const allVoices = getVoices();
 
     const utterance = new SpeechSynthesisUtterance(params.text);
     
     // Find a suitable voice
     const langCode = params.lang || 'en-US';
     let voiceToUse = params.voice;
-    if (!voiceToUse) {
-      const allVoices = getVoices();
-      if (allVoices) {
-        voiceToUse = allVoices.find(v => v.lang === langCode && v.name.includes('Google') && !v.name.includes('Premium')) || allVoices.find(v => v.lang === langCode);
-      }
+    
+    if (!voiceToUse && allVoices.length > 0) {
+        voiceToUse = allVoices.find(v => v.lang === langCode && v.name.includes('Google') && !v.name.includes('Premium')) || allVoices.find(v => v.lang === langCode && v.default) || allVoices.find(v => v.lang === langCode);
     }
 
     if (voiceToUse) {
@@ -93,13 +103,13 @@ export const useSpeechSynthesis = () => {
   };
 
   const pause = () => {
-    if (!supported || !isSpeaking) return;
+    if (!supported || !isSpeaking || isPaused) return;
     window.speechSynthesis.pause();
     setIsPaused(true);
   };
 
   const resume = () => {
-    if (!supported || !isSpeaking) return;
+    if (!supported || !isSpeaking || !isPaused) return;
     window.speechSynthesis.resume();
     setIsPaused(false);
   };
