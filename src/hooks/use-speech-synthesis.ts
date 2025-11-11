@@ -31,9 +31,11 @@ export const useSpeechSynthesis = () => {
       window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
 
       return () => {
-        window.speechSynthesis.onvoiceschanged = null;
-        // Clean up speech synthesis on component unmount
-        window.speechSynthesis.cancel();
+        if(window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = null;
+            // Clean up speech synthesis on component unmount
+            window.speechSynthesis.cancel();
+        }
       }
     }
   }, [handleVoicesChanged]);
@@ -43,14 +45,25 @@ export const useSpeechSynthesis = () => {
   };
 
   const speak = (params: SpeakParams) => {
-    if (!supported || isSpeaking) return;
+    if (!supported || isSpeaking || !params.text) return;
 
     const utterance = new SpeechSynthesisUtterance(params.text);
-    if (params.voice) {
-      utterance.voice = params.voice;
-    }
-    if (params.lang) utterance.lang = params.lang;
     
+    // Find a suitable voice
+    const langCode = params.lang || 'en-US';
+    let voiceToUse = params.voice;
+    if (!voiceToUse) {
+      const allVoices = getVoices();
+      if (allVoices) {
+        voiceToUse = allVoices.find(v => v.lang === langCode && v.name.includes('Google') && !v.name.includes('Premium')) || allVoices.find(v => v.lang === langCode);
+      }
+    }
+
+    if (voiceToUse) {
+      utterance.voice = voiceToUse;
+    }
+    
+    utterance.lang = langCode;
     utterance.rate = params.rate || 1;
     utterance.pitch = params.pitch || 1;
     utterance.volume = params.volume || 1;
@@ -68,9 +81,6 @@ export const useSpeechSynthesis = () => {
       setIsSpeaking(false);
       setIsPaused(false);
     }
-    
-    // onpause and onresume are not consistently fired,
-    // so we manage the isPaused state in our pause() and resume() functions.
     
     window.speechSynthesis.speak(utterance);
   };
